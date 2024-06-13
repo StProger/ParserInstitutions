@@ -1,4 +1,8 @@
+import json
+import re
+
 import requests
+from bs4 import BeautifulSoup
 
 
 def parse_institutions(request_body):
@@ -27,3 +31,27 @@ def parse_institutions(request_body):
     resp = requests.post(url, json=request_body, headers=headers)
 
     return resp.json()
+
+
+def parser_current_vuz(vuz_id: int):
+
+    resp = requests.get(f"https://moivyz.dnevnik.ru/entity/{vuz_id}")
+    print(resp.status_code)
+    soup = BeautifulSoup(resp.text, "lxml")
+
+    scr = soup.find_all("script")
+    print(type(scr[3]))
+    match = re.search(r"window\.__INITIAL_STATE__ = ({.*?});", str(scr[3]))
+
+    if match:
+        dictionary_string = match.group(1)
+        dictionary = json.loads(dictionary_string)
+        print(dictionary)
+        return dictionary
+    else:
+        print("Словарь не найден в строке.")
+        return None
+
+def get_url_map(address: str):
+
+    return f"https://yandex.ru/maps/?text={address}"
