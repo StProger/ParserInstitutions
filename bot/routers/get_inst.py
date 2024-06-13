@@ -41,10 +41,11 @@ async def get_institutions(message: types.Message, state: FSMContext):
 
     specialities = None
 
-    scores = message.text.split(", ")
-    # for i in range(len(scores) - 1):
-    #     scores[i] = scores[i].strip()
-    print(scores)
+    scores = message.text.split(",")
+    # print(scores)
+    for i in range(len(scores)):
+        scores[i] = scores[i].strip()
+    # print(scores)
 
     for score in scores:
 
@@ -180,19 +181,24 @@ async def get_institutions(message: types.Message, state: FSMContext):
         'employers': [],
     }
     data = parse_institutions(request_body)
-    print(data)
+    # print(data)
 
     text = ""
 
     for index, inst in enumerate(data["institutions"]):
         if index > 2:
             break
+        free_places = inst.get('freePlaces', "нет")
+        paid_places = inst.get('paidPlaces', 'нет')
+        min_free_pass_score = inst.get('minFreePassScore', '<b>-</b>')
+        min_paid_pass_score = inst.get('minPaidPassScore', '<b>-</b>')
+        min_price = inst.get('minPrice', '<b>-</b>')
         text += (f"<b>{inst['name']}</b>\n"
-                 f"Бюджетных мест: {inst.get('freePlaces', "нет")}\n"
-                 f"Платных мест: {inst.get('paidPlaces', 'нет')}\n"
-                 f"Минимальный балл на бюджет: {inst.get('minFreePassScore', '<b>-</b>')}\n"
-                 f"Минимальный балл платно: {inst.get('minPaidPassScore', '<b>-</b>')}\n"
-                 f"Минимальная стоимость на платную основу: {inst.get('minPrice', '<b>-</b>')}\n")
+                 f"Бюджетных мест: {free_places if free_places else 'нет'}\n"
+                 f"Платных мест: {paid_places if paid_places else 'нет'}\n"
+                 f"Минимальный балл на бюджет: {min_free_pass_score if min_free_pass_score else '<b>-</b>'}\n"
+                 f"Минимальный балл платно: {min_paid_pass_score if min_paid_pass_score else '<b>-</b>'}\n"
+                 f"Минимальная стоимость на платную основу: {min_price if min_price else '<b>-</b>'}\n")
 
         if inst.get('site'):
 
@@ -206,5 +212,7 @@ async def get_institutions(message: types.Message, state: FSMContext):
         parse_mode="HTML",
         disable_web_page_preview=True
     )
-
+    await message.answer(
+        text="Для возвращения в меню напишите /start"
+    )
 
