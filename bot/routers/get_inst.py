@@ -287,7 +287,7 @@ async def get_institutions(message: types.Message, state: FSMContext):
         map_ = None
 
         if address is not None:
-            map_ = get_url_map(address)
+            map_ = get_url_map(f"Москва, {address}")
 
         name = inst["name"]
         short_name = inst["shortName"]
