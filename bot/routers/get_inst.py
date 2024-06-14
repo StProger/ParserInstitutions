@@ -334,6 +334,9 @@ async def get_institutions(message: types.Message, state: FSMContext):
 
         paid_ege_pass_score = desc_vuz[0].get("paidEgePassScore")
 
+        if short_name == "РУДН":
+            paid_ege_pass_score = 160
+
         if paid_ege_pass_score is None or paid_ege_pass_score == 0.0:
 
             paid_ege_pass_score = "<b>-</b>"
