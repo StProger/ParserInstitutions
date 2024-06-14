@@ -37,7 +37,7 @@ def menu():
             ],
             [
                 types.InlineKeyboardButton(
-                    text="Юрист", callback_data="s_urist"
+                    text="Юриспруденция", callback_data="s_urist"
                 )
             ],
             [

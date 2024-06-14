@@ -43,6 +43,8 @@ async def get_institutions(message: types.Message, state: FSMContext):
 
     specialities = None
 
+    chose_spec = ""
+
     scores = message.text.split(",")
     # print(scores)
     for i in range(len(scores)):
@@ -60,6 +62,8 @@ async def get_institutions(message: types.Message, state: FSMContext):
         if len(scores) != 4:
             await message.answer("Введите баллы за все предметы.")
             return
+
+        chose_spec = "Международные отношения"
 
         if int(scores[0]) < spec_dict["s_between_city"]["min_rus"]:
             await message.answer("Минимальный балл за русский язык: 40")
@@ -91,6 +95,7 @@ async def get_institutions(message: types.Message, state: FSMContext):
         if int(scores[0]) < spec_dict["s_it"]["min_rus"]:
             await message.answer("Минимальный балл за русский язык: 40")
             return
+        chose_spec = "Информационная безопасность"
         subjects.append(settings.sub_dict["russia"])
         if int(scores[1]) < spec_dict["s_it"]["min_math"]:
             await message.answer("Минимальный балл за математику: 39")
@@ -111,7 +116,7 @@ async def get_institutions(message: types.Message, state: FSMContext):
             await message.answer("Минимальный балл за русский язык: 40")
             return
         subjects.append(settings.sub_dict["russia"])
-
+        chose_spec = "Стоматология"
         if int(scores[1]) < spec_dict["s_medic"]["min_bio"]:
             await message.answer("Минимальный балл за биологию: 39")
             return
@@ -129,6 +134,7 @@ async def get_institutions(message: types.Message, state: FSMContext):
         if int(scores[0]) < spec_dict["s_educ"]["min_rus"]:
             await message.answer("Минимальный балл за русский язык: 40")
             return
+        chose_spec = "Педагог"
         subjects.append(settings.sub_dict["russia"])
 
         if int(scores[1]) < spec_dict["s_educ"]["min_communic"]:
@@ -149,6 +155,8 @@ async def get_institutions(message: types.Message, state: FSMContext):
             await message.answer("Минимальный балл за русский язык: 40")
             return
 
+        chose_spec = "Строительство"
+
         subjects.append(settings.sub_dict["russia"])
 
         if int(scores[1]) < spec_dict["s_industry"]["min_math"]:
@@ -168,6 +176,8 @@ async def get_institutions(message: types.Message, state: FSMContext):
         if len(scores) != 4:
             await message.answer("Введите баллы за все предметы.")
             return
+
+        chose_spec = "Социология"
 
         if int(scores[0]) < spec_dict["s_sociology"]["min_rus"]:
             await message.answer("Минимальный балл за русский язык: 40")
@@ -200,6 +210,8 @@ async def get_institutions(message: types.Message, state: FSMContext):
             await message.answer("Введите баллы за все предметы.")
             return
 
+        chose_spec = "Юриспруденция"
+
         if int(scores[0]) < spec_dict["s_urist"]["min_rus"]:
             await message.answer("Минимальный балл за русский язык: 40")
             return
@@ -230,6 +242,9 @@ async def get_institutions(message: types.Message, state: FSMContext):
         if int(scores[0]) < spec_dict["s_philo"]["min_rus"]:
             await message.answer("Минимальный балл за русский язык: 40")
             return
+
+        chose_spec = "Философия"
+
         subjects.append(settings.sub_dict["russia"])
         if int(scores[1]) < spec_dict["s_philo"]["min_communic"]:
             await message.answer("Минимальный балл за обществознание: 45")
