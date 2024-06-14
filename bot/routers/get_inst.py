@@ -1,9 +1,11 @@
 from aiogram import Router, types, F
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
+from aiogram.types import WebAppInfo
+from aiogram.utils.keyboard import InlineKeyboardButton, InlineKeyboardBuilder
 
 from bot.settings import settings
-from bot.parser import parse_institutions
+from bot.parser import parse_institutions, get_url_map, parser_current_vuz
 
 router = Router()
 
@@ -161,6 +163,87 @@ async def get_institutions(message: types.Message, state: FSMContext):
 
         specialities = spec_dict["s_industry"]["specialities"]
 
+    elif state_data["chosen_spec"] == "s_sociology":
+
+        if len(scores) != 4:
+            await message.answer("Введите баллы за все предметы.")
+            return
+
+        if int(scores[0]) < spec_dict["s_sociology"]["min_rus"]:
+            await message.answer("Минимальный балл за русский язык: 40")
+            return
+        subjects.append(settings.sub_dict["russia"])
+        if int(scores[1]) < spec_dict["s_sociology"]["min_communic"]:
+            await message.answer("Минимальный балл за обществознание: 45")
+            return
+        subjects.append(settings.sub_dict["communic"])
+
+        if int(scores[2]) != 0:
+
+            if int(scores[2]) < spec_dict["s_sociology"]["min_inyz"]:
+                await message.answer("Минимальный балл за английский язык: 30")
+                return
+            subjects.append(settings.sub_dict["inyz"])
+
+        if int(scores[3]) != 0:
+
+            if int(scores[3]) < spec_dict["s_sociology"]["min_history"]:
+                await message.answer("Минимальный балл за английский язык: 35")
+                return
+            subjects.append(settings.sub_dict["history"])
+
+        specialities = spec_dict["s_sociology"]["specialities"]
+
+    elif state_data["chosen_spec"] == "s_urist":
+
+        if len(scores) != 4:
+            await message.answer("Введите баллы за все предметы.")
+            return
+
+        if int(scores[0]) < spec_dict["s_urist"]["min_rus"]:
+            await message.answer("Минимальный балл за русский язык: 40")
+            return
+        subjects.append(settings.sub_dict["russia"])
+        if int(scores[1]) < spec_dict["s_urist"]["min_communic"]:
+            await message.answer("Минимальный балл за обществознание: 45")
+            return
+        subjects.append(settings.sub_dict["communic"])
+
+        if int(scores[2]) != 0:
+
+            if int(scores[2]) < spec_dict["s_urist"]["min_inyz"]:
+                await message.answer("Минимальный балл за английский язык: 30")
+                return
+            subjects.append(settings.sub_dict["inyz"])
+
+        if int(scores[3]) != 0:
+
+            if int(scores[3]) < spec_dict["s_urist"]["min_history"]:
+                await message.answer("Минимальный балл за английский язык: 35")
+                return
+            subjects.append(settings.sub_dict["history"])
+
+        specialities = spec_dict["s_urist"]["specialities"]
+
+    elif state_data["chosen_spec"] == "s_philo":
+
+        if int(scores[0]) < spec_dict["s_philo"]["min_rus"]:
+            await message.answer("Минимальный балл за русский язык: 40")
+            return
+        subjects.append(settings.sub_dict["russia"])
+        if int(scores[1]) < spec_dict["s_philo"]["min_communic"]:
+            await message.answer("Минимальный балл за обществознание: 45")
+            return
+        subjects.append(settings.sub_dict["communic"])
+
+        if int(scores[2]) < spec_dict["s_philo"]["min_history"]:
+            await message.answer("Минимальный балл за английский язык: 35")
+            return
+        subjects.append(settings.sub_dict["history"])
+
+        specialities = spec_dict["s_philo"]["specialities"]
+
+
     request_body = {
         'cities': [3],
         'professions': [],
@@ -183,34 +266,94 @@ async def get_institutions(message: types.Message, state: FSMContext):
     data = parse_institutions(request_body)
     # print(data)
 
-    text = ""
-
+    text = "Вот какие университеты могу вам предложить по вашим баллам👇\n\n"
+    count = 0
+    builder = InlineKeyboardBuilder()
     for index, inst in enumerate(data["institutions"]):
-        if index > 2:
+        if count > 2:
             break
-        free_places = inst.get('freePlaces', "нет")
-        paid_places = inst.get('paidPlaces', 'нет')
-        min_free_pass_score = inst.get('minFreePassScore', '<b>-</b>')
-        min_paid_pass_score = inst.get('minPaidPassScore', '<b>-</b>')
-        min_price = inst.get('minPrice', '<b>-</b>')
-        text += (f"<b>{inst['name']}</b>\n"
-                 f"Бюджетных мест: {free_places if free_places else 'нет'}\n"
-                 f"Платных мест: {paid_places if paid_places else 'нет'}\n"
-                 f"Минимальный балл на бюджет: {min_free_pass_score if min_free_pass_score else '<b>-</b>'}\n"
-                 f"Минимальный балл платно: {min_paid_pass_score if min_paid_pass_score else '<b>-</b>'}\n"
-                 f"Минимальная стоимость на платную основу: {min_price if min_price else '<b>-</b>'}\n")
 
-        if inst.get('site'):
+        desc_vuz = parser_current_vuz(vuz_id=inst["id"], spec=specialities)
 
-            text += f"Сайт: <a href='{inst.get('site')}'>{inst.get('shortName', 'ссылка')}</a>\n"
+        if desc_vuz == "ERROR":
+            await message.answer("Произошла ошибка.")
+            return
+
+        if desc_vuz is None:
+            continue
+
+        address = inst.get("address")
+
+        map_ = None
+
+        if address is not None:
+            map_ = get_url_map(address)
+
+        name = inst["name"]
+        short_name = inst["shortName"]
+
+        site = inst["site"]
+
+        price = desc_vuz[0].get("price")
+
+        if price is None:
+
+            price = "Нет"
+
+        free_places = desc_vuz[0].get("freePlaces")
+
+        if free_places is None:
+            free_places = "нет"
+
+        paid_places = desc_vuz[0].get("paidPlaces")
+
+        if paid_places is None:
+
+            paid_places = "нет"
+
+        free_ege_pass_score = desc_vuz[0].get("freeEgePassScore")
+
+        if free_ege_pass_score is None or free_ege_pass_score == 0.0:
+
+            free_ege_pass_score = "<b>-</b>"
+
+        paid_ege_pass_score = desc_vuz[0].get("paidEgePassScore")
+
+        if paid_ege_pass_score is None or paid_ege_pass_score == 0.0:
+
+            paid_ege_pass_score = "<b>-</b>"
+
+        text += (f"<b>{name}</b>\n"
+                 f"Бюджетных мест: {free_places}\n"
+                 f"Платных мест: {paid_places}\n"
+                 f"Минимальный балл на бюджет: {int(free_ege_pass_score) if type(free_ege_pass_score) != str else free_ege_pass_score}\n"
+                 f"Минимальный балл платно: {int(paid_ege_pass_score) if type(paid_ege_pass_score) != str else paid_ege_pass_score}\n"
+                 f"Стоимость на платную основу: {price}\n")
+
+        if site:
+
+            text += f"Сайт: <a href='{site}'>{short_name}</a>\n"
+
+        if map_:
+
+            builder.row(
+                InlineKeyboardButton(
+                    text=short_name, url=map_
+                )
+            )
 
         text += "➖➖➖➖➖➖➖➖➖➖➖➖\n"
+        count += 1
 
+    await message.answer(
+        text=f"Спасибо! Ваш балл равен: {sum(list(map(int, scores)))}"
+    )
 
     await message.answer(
         text=text,
         parse_mode="HTML",
-        disable_web_page_preview=True
+        disable_web_page_preview=True,
+        reply_markup=builder.as_markup()
     )
     await message.answer(
         text="Для возвращения в меню напишите /start"

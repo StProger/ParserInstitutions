@@ -33,24 +33,27 @@ def parse_institutions(request_body):
     return resp.json()
 
 
-def parser_current_vuz(vuz_id: int):
+def parser_current_vuz(vuz_id: int, spec: list):
 
     resp = requests.get(f"https://moivyz.dnevnik.ru/entity/{vuz_id}")
-    print(resp.status_code)
+    # print(resp.status_code)
     soup = BeautifulSoup(resp.text, "lxml")
 
     scr = soup.find_all("script")
-    print(type(scr[3]))
+
     match = re.search(r"window\.__INITIAL_STATE__ = ({.*?});", str(scr[3]))
 
     if match:
         dictionary_string = match.group(1)
         dictionary = json.loads(dictionary_string)
-        print(dictionary)
-        return dictionary
+        current_spec = list(filter(lambda spec_: spec_["name"] in spec, dictionary["entityData"]["programs"]))
+        # print(current_spec)
+        if len(current_spec) == 0:
+            return None
+        return current_spec
     else:
         print("Словарь не найден в строке.")
-        return None
+        return "ERROR"
 
 def get_url_map(address: str):
 

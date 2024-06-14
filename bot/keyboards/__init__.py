@@ -7,22 +7,22 @@ def menu():
         inline_keyboard=[
             [
                 types.InlineKeyboardButton(
-                    text="Информационные технологии", callback_data="s_it"
+                    text="Информационная безопасность", callback_data="s_it"
                 )
             ],
             [
                 types.InlineKeyboardButton(
-                    text="Медицина", callback_data="s_medic"
+                    text="Стоматология", callback_data="s_medic"
                 )
             ],
+            # [
+            #     types.InlineKeyboardButton(
+            #         text="Педагог", callback_data="s_educ"
+            #     )
+            # ],
             [
                 types.InlineKeyboardButton(
-                    text="Образование (педагогика и тп.)", callback_data="s_educ"
-                )
-            ],
-            [
-                types.InlineKeyboardButton(
-                    text="Инженерия", callback_data="s_industry"
+                    text="Строительство", callback_data="s_industry"
                 )
             ],
             [
@@ -30,5 +30,20 @@ def menu():
                     text="Международные отношения", callback_data="s_between_city"
                 )
             ],
+            [
+                types.InlineKeyboardButton(
+                    text="Социология", callback_data="s_sociology"
+                )
+            ],
+            [
+                types.InlineKeyboardButton(
+                    text="Юрист", callback_data="s_urist"
+                )
+            ],
+            [
+                types.InlineKeyboardButton(
+                    text="Философия", callback_data="s_philo"
+                )
+            ]
         ]
     )
