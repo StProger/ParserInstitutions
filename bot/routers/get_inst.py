@@ -363,7 +363,8 @@ async def get_institutions(message: types.Message, state: FSMContext):
         count += 1
 
     await message.answer(
-        text=f"Спасибо! Ваш балл равен: {sum(list(map(int, scores)))}"
+        text=f"Спасибо! Ваш балл равен: {sum(list(map(int, scores)))}\n"
+             f"Направление: {chose_spec}"
     )
 
     await message.answer(
