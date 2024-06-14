@@ -329,18 +329,20 @@ async def get_institutions(message: types.Message, state: FSMContext):
                  f"Минимальный балл на бюджет: {int(free_ege_pass_score) if type(free_ege_pass_score) != str else free_ege_pass_score}\n"
                  f"Минимальный балл платно: {int(paid_ege_pass_score) if type(paid_ege_pass_score) != str else paid_ege_pass_score}\n"
                  f"Стоимость на платную основу: {price}\n")
+        if address:
+            text += f"Адрес: <code>{address}</code>\n"
 
         if site:
 
             text += f"Сайт: <a href='{site}'>{short_name}</a>\n"
 
-        if map_:
-
-            builder.row(
-                InlineKeyboardButton(
-                    text=short_name, url=map_
-                )
-            )
+        # if map_:
+        #
+        #     builder.row(
+        #         InlineKeyboardButton(
+        #             text=short_name, url=map_
+        #         )
+        #     )
 
         text += "➖➖➖➖➖➖➖➖➖➖➖➖\n"
         count += 1
@@ -352,8 +354,7 @@ async def get_institutions(message: types.Message, state: FSMContext):
     await message.answer(
         text=text,
         parse_mode="HTML",
-        disable_web_page_preview=True,
-        reply_markup=builder.as_markup()
+        disable_web_page_preview=True
     )
     await message.answer(
         text="Для возвращения в меню напишите /start"
