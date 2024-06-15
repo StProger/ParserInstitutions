@@ -369,12 +369,16 @@ async def get_institutions(message: types.Message, state: FSMContext):
         text=f"Спасибо! Ваш балл равен: {sum(list(map(int, scores)))}\n"
              f"Направление: {chose_spec}"
     )
-
-    await message.answer(
-        text=text,
-        parse_mode="HTML",
-        disable_web_page_preview=True
-    )
+    if count == 0:
+        await message.answer(
+            text="К сожалению, не смог найти вузы для вашего направления с такими баллами."
+        )
+    else:
+        await message.answer(
+            text=text,
+            parse_mode="HTML",
+            disable_web_page_preview=True
+        )
     await message.answer(
         text="Для возвращения в меню напишите /start"
     )
